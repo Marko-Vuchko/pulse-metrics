@@ -1,20 +1,26 @@
 # PulseMetrics
 
 [![CI](https://img.shields.io/github/actions/workflow/status/Marko-Vuchko/pulse-metrics/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/Marko-Vuchko/pulse-metrics/actions)
+[![Live demo](https://img.shields.io/badge/live%20demo-GitHub%20Pages-2dd4bf?style=flat-square)](https://marko-vuchko.github.io/pulse-metrics/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](./LICENSE)
 
 SaaS analytics dashboard by [Fluxis Labs](https://github.com/Marko-Vuchko) - MRR, churn, ARPU, and customer ops in a dark-first Next.js shell backed by hosted Supabase.
 
 Portfolio demo of App Router, SSR auth, RLS multi-tenant data, shadcn/ui, Recharts, and Playwright CI.
 
-| Demo login (local / hosted Supabase) | Value |
+## Try it
+
+| | |
 |---|---|
-| Email | `demo@fluxislabs.com` |
-| Password | `fluxis-demo-2026` |
+| **Live showcase** | [marko-vuchko.github.io/pulse-metrics](https://marko-vuchko.github.io/pulse-metrics/) - ~40s walkthrough video + product stills |
+| **Demo login** (local / hosted Supabase) | Email `demo@fluxislabs.com` · Password `fluxis-demo-2026` |
+| **Case study** | [`docs/CASE-STUDY.md`](docs/CASE-STUDY.md) - problem → architecture → trade-offs → v2 |
 
-Case study (problem → architecture → trade-offs → v2): [`docs/CASE-STUDY.md`](docs/CASE-STUDY.md)
+> The GitHub Pages site is a **static portfolio showcase** (video + screenshots). It is not the full Next.js runtime. Auth, RLS, and dashboard flows need a local or Node-hosted run against Supabase.
 
-## Screenshots
+## Screenshots & walkthrough
+
+[~40s product walkthrough](https://marko-vuchko.github.io/pulse-metrics/#walkthrough) (landing → demo login → customers CRUD → analytics). Local copy: [`docs/videos/walkthrough.mp4`](docs/videos/walkthrough.mp4).
 
 Landing:
 
@@ -26,7 +32,7 @@ Dashboard overview with MRR chart:
 
 ## Intentional demo surfaces
 
-These are scoped on purpose for a portfolio walkthrough - not unfinished stubs:
+Scoped on purpose for a portfolio walkthrough - not unfinished stubs:
 
 | Surface | What it does | What it does not |
 |---|---|---|
@@ -45,17 +51,11 @@ These are scoped on purpose for a portfolio walkthrough - not unfinished stubs:
 | Backend | Hosted Supabase (Auth + Postgres + RLS) |
 | Forms | react-hook-form + Zod |
 | Observability | Vercel Analytics + Speed Insights, optional Sentry |
-| QA | ESLint, Vitest (unit), production build, Playwright, Lighthouse CI, GitHub Actions |
-
-## No Docker required
-
-PulseMetrics uses a **hosted** Supabase project only.
-
-- Do **not** run `supabase start`
-- Do **not** use Inbucket or a local mail catcher
-- Email confirmation uses a **real inbox** (hosted Auth SMTP / Supabase email)
+| QA | ESLint, Vitest, Playwright, Lighthouse CI, GitHub Actions |
 
 ## Quick start
+
+Hosted Supabase only - no Docker, no `supabase start`, no Inbucket. Email confirmation uses a real inbox.
 
 ```bash
 npm install
@@ -66,93 +66,43 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-### Hosted Supabase schema
+### Schema & auth
 
-Migrations live in `supabase/migrations/`. Seed data is in `supabase/seed.sql`.
-
-Against a linked hosted project (CLI, no Docker):
+Migrations: `supabase/migrations/`. Seed: `supabase/seed.sql`.
 
 ```bash
 npx supabase link --project-ref <PROJECT_ID>
 npx supabase db push
-# Seed is applied separately when needed (see supabase/seed.sql)
-```
-
-Generate types:
-
-```bash
 npx supabase gen types typescript --project-id <PROJECT_ID> > types/database.ts
 ```
 
-### Auth URL configuration
+In Supabase Auth → URL configuration:
 
-In the hosted Supabase dashboard (Authentication → URL configuration):
+- **Site URL**: `http://localhost:3000` (and your production URL)
+- **Redirect URLs**: `/login`, `/auth/callback` (dev + production)
 
-- **Site URL**: `http://localhost:3000` (dev) and your production URL
-- **Redirect URLs**: `http://localhost:3000/login`, `http://localhost:3000/auth/callback` (plus production equivalents)
-
-Signup requires confirming the email via a real inbox before sign-in works.
-
-Google OAuth is checklist-only by default (`/auth/setup-google`). Set `NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED=1` after enabling the provider.
-
-## Motion / ambient (marketing)
-
-Landing, auth, and legal surfaces use a lightweight `AmbientField` (CSS orbs + canvas particles) over the existing atmosphere. No Three.js / Spline (PRD exclusion). Dashboard stays calm. All motion respects `prefers-reduced-motion`.
+Google OAuth stays checklist-only until `NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED=1`.
 
 ## Scripts
 
 | Script | Purpose |
 |---|---|
 | `npm run dev` | Local Next.js server |
-| `npm run lint` | ESLint |
-| `npm run typecheck` | TypeScript (`tsc --noEmit`) |
-| `npm test` | Vitest unit tests (Zod, helpers, mocked Server Actions) |
-| `npm run test:coverage` | Vitest coverage gate (app logic + types) |
+| `npm run lint` / `typecheck` | ESLint + `tsc --noEmit` |
+| `npm test` / `test:coverage` | Vitest unit tests + coverage gate |
 | `npm run build` | Production build |
-| `npm run test:e2e` | Playwright smoke with **mock auth** (CI default) |
-| `npm run test:e2e:hosted` | Full e2e against **hosted** Supabase (needs `.env.local`) |
-| `npm run lighthouse` | Lighthouse CI budgets against the landing page (needs a prior `build`) |
+| `npm run test:e2e` | Playwright mock-auth smoke (CI default) |
+| `npm run test:e2e:hosted` | Hosted Supabase e2e (needs `.env.local`) |
+| `npm run lighthouse` | Landing Lighthouse budgets (after `build`) |
+| `npm run record:walkthrough` | Re-record the portfolio walkthrough video |
 
-## Playwright
+## Testing
 
-### Mock auth (CI / default)
+**Mock auth (CI):** `PULSE_E2E_MOCK_AUTH=1` + `pulse_e2e_mock` cookie. Covers landing, theme, overview KPIs, customers search/filter, axe a11y.
 
-`npm run test:e2e` sets `PULSE_E2E_MOCK_AUTH=1`. Playwright sets a `pulse_e2e_mock` cookie so `/dashboard` loads fixture KPIs and customers without a real session. GitHub Actions runs this path by default - no Supabase service container, no Docker.
+**Unit:** Zod schemas, helpers (CSV, query parsers, rate limit, safe errors), mocked Server Actions.
 
-Covers: landing CTAs, theme toggle, overview KPIs, customers search/filter, axe a11y smoke (landing / login / dashboard).
-
-### Unit tests
-
-```bash
-npm test
-```
-
-Vitest covers Zod schemas, pure helpers (`lib/utils`, CSV, customer query parsers, activity diffs, in-memory auth rate limit, safe error mapping), and mocked Server Action happy/error paths (`signIn`, `createCustomer`, `upsertMetricPoint`).
-
-### Hosted e2e (local / optional CI)
-
-With `.env.local` pointing at the hosted project and the demo user seeded:
-
-```bash
-npm run test:e2e:hosted
-```
-
-This sets `PULSE_E2E_HOSTED=1`, disables mock auth, and runs login + customers CRUD against live Auth/RLS.
-
-Optional overrides: `E2E_DEMO_EMAIL`, `E2E_DEMO_PASSWORD`.
-
-Optional CI: set repository variable `ENABLE_HOSTED_E2E=true` plus secrets `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (and optional demo credentials), then run the workflow via **Actions → CI → Run workflow**.
-
-## Production ops (Tier 3)
-
-| Item | How |
-|---|---|
-| Vercel Analytics / Speed Insights | Shipped in root layout (`@vercel/analytics`, `@vercel/speed-insights`). Enable the features in the Vercel project dashboard after deploy. |
-| Sentry | Optional. Set `NEXT_PUBLIC_SENTRY_DSN`. Error boundaries call `reportError`. Source maps need `SENTRY_AUTH_TOKEN` + `SENTRY_ORG` + `SENTRY_PROJECT`. |
-| Security headers | CSP, `X-Frame-Options`, `Referrer-Policy`, HSTS, and related headers in `next.config.ts`. |
-| Supabase Advisors | Hosted project reviewed; FK index on `team_invites.invited_by` applied. Enable Auth **Leaked password protection** in the Supabase dashboard when going live. |
-| Lighthouse | `lighthouserc.js` budgets for landing LCP/a11y/SEO; CI job runs after the quality job. No Three.js / Spline (PRD exclusion). |
-| Hosted e2e | Gated on `ENABLE_HOSTED_E2E=true` + Action secrets; manual `workflow_dispatch` only. |
+**Hosted e2e:** `npm run test:e2e:hosted` against seeded demo user. Optional CI via `ENABLE_HOSTED_E2E=true` + Action secrets, then **Actions → CI → Run workflow**.
 
 ## Architecture
 
@@ -165,38 +115,38 @@ Browser
        └─ Hosted Supabase (Auth JWT + Postgres RLS)
 ```
 
-- Tenant isolation: `tenant_id = auth.uid()` (profiles: `id = auth.uid()`)
+- Tenant isolation: `tenant_id = auth.uid()`
 - Dashboard pages fetch in Server Components; charts are client islands
-- Mock auth is env-gated (`PULSE_E2E_MOCK_AUTH`) and never used in normal product traffic
+- Mock auth is env-gated and never used in normal product traffic
+- Marketing motion (`AmbientField`) respects `prefers-reduced-motion`; no Three.js / Spline
+
+## Ops notes
+
+| Item | Notes |
+|---|---|
+| Security headers | CSP, frame options, Referrer-Policy, HSTS in `next.config.ts` |
+| Sentry | Optional `NEXT_PUBLIC_SENTRY_DSN`; source maps need `SENTRY_*` tokens |
+| Lighthouse | `lighthouserc.js` budgets in CI after the quality job |
+| Supabase | Enable Auth leaked-password protection when going live |
 
 ## Folder map
 
 ```text
-app/
-  (auth)/          Login, signup, Google setup checklist
-  auth/callback/   OAuth PKCE exchange
-  dashboard/       Overview, analytics, metrics, customers, team, billing, settings, account
-  privacy|terms/   Legal stubs
-components/
-  auth|dashboard|landing|legal|ui/
-lib/
-  data/            Metrics + customers + profile queries
-  e2e/             Mock auth helpers (CI only)
-  supabase/        Browser, server, middleware clients
-supabase/
-  migrations/      Schema + RLS
-  seed.sql         Demo tenant data
+app/               Auth, dashboard, legal, SEO
+components/        auth | dashboard | landing | legal | ui
+lib/               data, supabase, e2e mock, security
+supabase/          migrations + seed
 e2e/               Playwright specs
-.github/workflows/ CI (lint + build + mock Playwright)
-docs/              PRD, phase status, case study, README images
-types/             Generated DB + Zod domain types
+site/              GitHub Pages showcase source
+docs/              PRD, case study, images, walkthrough video
+.github/workflows/ CI
 ```
 
 ## Quality gates
 
-- `npm run lint` and `npm run build` must pass
-- GitHub Actions: lint + unit/coverage + build + Playwright (mock auth) + Lighthouse landing budgets
-- Full product smoke: `npm run test:e2e:hosted` against hosted Supabase (optional CI via `ENABLE_HOSTED_E2E`)
+- `npm run lint`, `typecheck`, `test`, and `build` must pass
+- GitHub Actions: lint + unit/coverage + build + Playwright (mock) + Lighthouse
+- Full product smoke: `npm run test:e2e:hosted` (optional CI)
 
 ## License
 
