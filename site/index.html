@@ -9,7 +9,8 @@
       content="PulseMetrics portfolio demo by Fluxis Labs - Next.js 16, hosted Supabase RLS, customers CRUD, analytics. Walkthrough and screenshots."
     />
     <meta name="theme-color" content="#0a0f0e" />
-    <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
+    <link rel="icon" href="assets/logo-mark.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="assets/logo-mark.svg" />
     <style>
       :root {
         --bg: #0a0f0e;
@@ -87,6 +88,13 @@
       .brand img {
         width: 28px;
         height: 28px;
+        display: block;
+        flex-shrink: 0;
+      }
+
+      .brand-name {
+        font-weight: 700;
+        letter-spacing: -0.02em;
       }
 
       .nav {
@@ -309,8 +317,8 @@
     <div class="wrap">
       <header>
         <a class="brand" href="./">
-          <img src="assets/logo.svg" alt="" width="28" height="28" />
-          <span>PulseMetrics</span>
+          <img src="assets/logo-mark.svg" alt="" width="28" height="28" />
+          <span class="brand-name">PulseMetrics</span>
         </a>
         <nav class="nav" aria-label="Primary">
           <a class="btn" href="https://github.com/Marko-Vuchko/pulse-metrics">GitHub</a>
