@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 64" fill="none" role="img" aria-label="PulseMetrics">
+  <g transform="translate(0,0)">
+    <rect x="2" y="2" width="60" height="60" rx="14" fill="#22D3EE" fill-opacity="0.14" stroke="#22D3EE" stroke-opacity="0.55" stroke-width="1.5"/>
+    <path d="M32 14 L46 22 V38 L32 46 L18 38 V22 Z" stroke="#22D3EE" stroke-width="2" stroke-linejoin="round" fill="#22D3EE" fill-opacity="0.08"/>
+    <path d="M20 34 H26 L29 24 L35 40 L38 30 H44" stroke="#22D3EE" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="32" cy="42" r="2.4" fill="#22D3EE"/>
+  </g>
+  <text x="78" y="40" fill="#E8EEF7" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="28" font-weight="600" letter-spacing="-0.02em">PulseMetrics</text>
+</svg>
