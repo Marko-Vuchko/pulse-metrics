@@ -13,7 +13,7 @@ function DashboardPreview() {
     <div
       id="preview"
       className="landing-preview-frame relative mx-auto w-full max-w-5xl scroll-mt-20 overflow-hidden rounded-[1.25rem] border border-border/80 bg-card shadow-[0_28px_80px_-36px_oklch(0.12_0.03_255/0.85)] sm:rounded-[1.5rem]"
-      role="img"
+      role="region"
       aria-label="PulseMetrics dashboard preview showing MRR, active users, churn, ARPU, and an interactive MRR trend chart"
     >
       <div className="flex items-center gap-2 border-b border-border/70 bg-muted/40 px-4 py-3 sm:px-5">
