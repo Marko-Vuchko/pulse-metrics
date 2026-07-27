@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PulseMetrics - SaaS analytics portfolio demo</title>
+    <meta
+      name="description"
+      content="PulseMetrics portfolio demo by Fluxis Labs - Next.js 16, hosted Supabase RLS, customers CRUD, analytics. Walkthrough and screenshots."
+    />
+    <meta name="theme-color" content="#0a0f0e" />
+    <link rel="icon" href="assets/logo-mark.svg?v=3" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="assets/logo-mark.svg?v=3" />
+    <style>
+      :root {
+        --bg: #0a0f0e;
+        --bg-elev: #101816;
+        --line: rgba(148, 163, 184, 0.16);
+        --text: #e8efec;
+        --muted: #9aa8a3;
+        --accent: #2dd4bf;
+        --accent-dim: rgba(45, 212, 191, 0.14);
+        --font: "Segoe UI", "Helvetica Neue", sans-serif;
+        --mono: ui-monospace, "Cascadia Code", "Consolas", monospace;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        color: var(--text);
+        font-family: var(--font);
+        background:
+          radial-gradient(1000px 520px at 12% -10%, rgba(45, 212, 191, 0.16), transparent 55%),
+          radial-gradient(800px 480px at 90% 8%, rgba(14, 116, 144, 0.18), transparent 50%),
+          linear-gradient(180deg, #070b0a 0%, var(--bg) 40%, #0c1211 100%);
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0.35;
+        background-image:
+          linear-gradient(rgba(148, 163, 184, 0.05) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(148, 163, 184, 0.05) 1px, transparent 1px);
+        background-size: 48px 48px;
+        mask-image: radial-gradient(ellipse at center, black 35%, transparent 80%);
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .wrap {
+        position: relative;
+        z-index: 1;
+        width: min(1080px, calc(100% - 2rem));
+        margin: 0 auto;
+        padding: 1.25rem 0 4rem;
+      }
+
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 3.5rem;
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .brand img {
+        width: 36px;
+        height: 36px;
+        display: block;
+        object-fit: contain;
+        object-position: center;
+        flex-shrink: 0;
+      }
+
+      .nav {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        min-height: 2.5rem;
+        padding: 0.55rem 1rem;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: transparent;
+        color: var(--text);
+        font: inherit;
+        font-size: 0.92rem;
+        transition: background 160ms ease, border-color 160ms ease, transform 160ms ease;
+      }
+
+      .btn:hover {
+        background: rgba(255, 255, 255, 0.04);
+        border-color: rgba(45, 212, 191, 0.4);
+      }
+
+      .btn-primary {
+        background: var(--accent);
+        border-color: transparent;
+        color: #042f2e;
+        font-weight: 650;
+      }
+
+      .btn-primary:hover {
+        background: #5eead4;
+        border-color: transparent;
+      }
+
+      .hero {
+        display: grid;
+        gap: 1.1rem;
+        margin-bottom: 2.75rem;
+        animation: rise 700ms ease both;
+      }
+
+      .eyebrow {
+        color: var(--accent);
+        font-family: var(--mono);
+        font-size: 0.78rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(2.4rem, 6vw, 4rem);
+        line-height: 0.98;
+        letter-spacing: -0.045em;
+      }
+
+      .lede {
+        margin: 0;
+        max-width: 38rem;
+        color: #b7c4bf;
+        font-size: 1.08rem;
+        line-height: 1.55;
+      }
+
+      .cta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-top: 0.5rem;
+      }
+
+      .panel {
+        border: 1px solid var(--line);
+        border-radius: 1.25rem;
+        background: color-mix(in srgb, var(--bg-elev) 88%, transparent);
+        backdrop-filter: blur(8px);
+        overflow: hidden;
+      }
+
+      .video-wrap {
+        margin-bottom: 2.5rem;
+        animation: rise 900ms ease both;
+      }
+
+      .video-wrap video {
+        display: block;
+        width: 100%;
+        height: auto;
+        aspect-ratio: 16 / 10;
+        background: #000;
+        object-fit: contain;
+      }
+
+      .section {
+        margin-bottom: 2.5rem;
+        animation: rise 1100ms ease both;
+      }
+
+      .section h2 {
+        margin: 0 0 0.75rem;
+        font-size: 1.35rem;
+        letter-spacing: -0.03em;
+      }
+
+      .section p {
+        margin: 0 0 1.1rem;
+        color: #b7c4bf;
+        line-height: 1.5;
+      }
+
+      .shots {
+        display: flex;
+        flex-direction: column;
+        gap: 3rem;
+        width: 100%;
+      }
+
+      .shots figure {
+        margin: 0 auto;
+        width: 100%;
+        max-width: 820px;
+      }
+
+      .shots img {
+        display: block;
+        width: 100%;
+        height: auto;
+        aspect-ratio: 16 / 10;
+        object-fit: contain;
+        object-position: top center;
+        border-radius: 1rem;
+        border: 1px solid var(--line);
+        background: #050807;
+      }
+
+      .shots figcaption {
+        margin-top: 0.85rem;
+        color: #93a39d;
+        font-size: 0.9rem;
+      }
+
+      .creds {
+        display: grid;
+        gap: 0.75rem;
+        padding: 1.1rem 1.2rem;
+      }
+
+      .creds dl {
+        display: grid;
+        gap: 0.65rem;
+        margin: 0;
+      }
+
+      .creds div {
+        display: grid;
+        gap: 0.2rem;
+      }
+
+      .creds dt {
+        color: #93a39d;
+        font-size: 0.8rem;
+      }
+
+      .creds dd {
+        margin: 0;
+        font-family: var(--mono);
+        font-size: 0.95rem;
+      }
+
+      .note {
+        padding: 0.9rem 1.1rem;
+        border-top: 1px solid var(--line);
+        color: #93a39d;
+        font-size: 0.88rem;
+        line-height: 1.45;
+        background: var(--accent-dim);
+      }
+
+      footer {
+        margin-top: 2rem;
+        color: #7f908a;
+        font-size: 0.88rem;
+      }
+
+      footer a {
+        color: var(--accent);
+      }
+
+      @keyframes rise {
+        from {
+          opacity: 0;
+          transform: translateY(14px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        .hero,
+        .video-wrap,
+        .section {
+          animation: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <a class="brand" href="./" aria-label="PulseMetrics">
+          <img
+            src="assets/logo-mark.svg?v=3"
+            alt="PulseMetrics"
+            width="64"
+            height="64"
+          />
+        </a>
+        <nav class="nav" aria-label="Primary">
+          <a class="btn" href="https://github.com/Marko-Vuchko/pulse-metrics">GitHub</a>
+          <a class="btn btn-primary" href="#walkthrough">Watch walkthrough</a>
+        </nav>
+      </header>
+
+      <section class="hero" aria-labelledby="hero-title">
+        <p class="eyebrow">Fluxis Labs portfolio demo</p>
+        <h1 id="hero-title">PulseMetrics</h1>
+        <p class="lede">
+          SaaS analytics shell with MRR, churn, customers, and hosted Supabase RLS.
+          This page is the public demo surface on GitHub Pages - clone the repo to run the full Next.js app locally.
+        </p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="#walkthrough">40s product walkthrough</a>
+          <a class="btn" href="https://github.com/Marko-Vuchko/pulse-metrics#quick-start">Run locally</a>
+        </div>
+      </section>
+
+      <section id="walkthrough" class="video-wrap panel" aria-label="Walkthrough video">
+        <video controls playsinline preload="metadata" poster="assets/landing.png">
+          <source src="assets/walkthrough.mp4" type="video/mp4" />
+          <source src="assets/walkthrough.webm" type="video/webm" />
+          Your browser does not support embedded video.
+        </video>
+      </section>
+
+      <section class="section" aria-labelledby="shots-title">
+        <h2 id="shots-title">Product stills</h2>
+        <p>Landing first, then the dashboard MRR overview used in the walkthrough.</p>
+        <div class="shots">
+          <figure>
+            <img
+              src="assets/landing.png"
+              alt="PulseMetrics landing page"
+              width="1440"
+              height="900"
+              loading="eager"
+            />
+            <figcaption>Landing</figcaption>
+          </figure>
+          <figure>
+            <img
+              src="assets/dashboard-mrr.png"
+              alt="PulseMetrics dashboard with MRR chart"
+              width="1440"
+              height="900"
+              loading="eager"
+            />
+            <figcaption>Dashboard overview</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="demo-title">
+        <h2 id="demo-title">Demo login (local / hosted Supabase)</h2>
+        <div class="panel">
+          <div class="creds">
+            <dl>
+              <div>
+                <dt>Email</dt>
+                <dd>demo@fluxislabs.com</dd>
+              </div>
+              <div>
+                <dt>Password</dt>
+                <dd>fluxis-demo-2026</dd>
+              </div>
+            </dl>
+          </div>
+          <p class="note">
+            Walkthrough path: landing → demo login → customers create/edit/archive → analytics.
+            Full app auth and RLS require running the Next.js project against the hosted Supabase project from the README.
+          </p>
+        </div>
+      </section>
+
+      <footer>
+        Built by
+        <a href="https://github.com/Marko-Vuchko">Marko-Vuchko</a>
+        / Fluxis Labs ·
+        <a href="https://github.com/Marko-Vuchko/pulse-metrics">Source on GitHub</a>
+      </footer>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" role="img" aria-label="PulseMetrics">
+  <defs>
+    <linearGradient id="pm-face" x1="8" y1="6" x2="56" y2="58" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#22D3EE" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#0891B2" stop-opacity="0.08"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="60" height="60" rx="14" fill="url(#pm-face)" stroke="#22D3EE" stroke-opacity="0.55" stroke-width="1.5"/>
+  <path
+    d="M32 14 L46 22 V38 L32 46 L18 38 V22 Z"
+    stroke="#22D3EE"
+    stroke-width="2"
+    stroke-linejoin="round"
+    fill="#22D3EE"
+    fill-opacity="0.08"
+  />
+  <path
+    d="M20 34 H26 L29 24 L35 40 L38 30 H44"
+    stroke="#22D3EE"
+    stroke-width="2.4"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+  <circle cx="32" cy="42" r="2.4" fill="#22D3EE"/>
+</svg>
